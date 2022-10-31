@@ -5,9 +5,13 @@
 import io
 import picamera
 import logging
+import ConfigParser
 import socketserver
 from threading import Condition
 from http import server
+
+config = ConfigParser.ConfigParser()
+config.readfp(open(r'config.txt'))
 
 PAGE="""\
 <html>
@@ -15,10 +19,10 @@ PAGE="""\
 <title>Live</title>
 </head>
 <body>
-<center><img src="stream.mjpg" width="640" height="480"></center>
+<center><img src="stream.mjpg" width="{0}" height="{1}"></center>
 </body>
 </html>
-"""
+""".format(config.get('CONFIG', 'x'), config.get('CONFIG', 'y'))
 
 class StreamingOutput(object):
     def __init__(self):
@@ -80,7 +84,9 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
     allow_reuse_address = True
     daemon_threads = True
 
-with picamera.PiCamera(resolution='640x480', framerate=24) as camera:
+
+res = '{0}x{1}'.format(format(config.get('CONFIG', 'x'), config.get('CONFIG', 'y'))
+with picamera.PiCamera(resolution=res, framerate=24) as camera:
     output = StreamingOutput()
     camera.start_recording(output, format='mjpeg')
     try:
