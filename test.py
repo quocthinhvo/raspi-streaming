@@ -11,7 +11,7 @@ async def send_frame(websocket,frame):
 async def main():
     video_path = "video.mp4"
     cap = cv2.VideoCapture(video_path)
-    websocket = await websockets.connect('ws://localhost:8000/ws')
+    websocket = await websockets.connect('ws://192.168.28.27:8085/ws')
     while cap.isOpened():
         tasks = list()
         ret, frame = cap.read()
